@@ -250,13 +250,3 @@ CREATE TABLE bookings (
 4. Run migrations: `npm run typeorm:run-migrations`
 5. Start the server: `npm run start:dev`
 
-## Future Enhancements
-
-1. Authentication & Authorization
-2. Input Validation Enhancement
-3. Rate Limiting
-4. API Documentation (Swagger)
-5. Unit & Integration Tests
-6. Logging System
-7. Caching Layer
-8. Real-time Notifications
