@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from '../../users/entities/user.entity';
 
 export enum BookingStatus {
   PENDING = 'pending',
@@ -38,6 +41,10 @@ export class Booking {
 
   @Column({ type: 'uuid' })
   userId: string;
+
+  @ManyToOne(() => User, (user) => user.bookings)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;
