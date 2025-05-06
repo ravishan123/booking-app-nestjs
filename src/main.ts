@@ -1,0 +1,9 @@
+import { v4 as uuidv4 } from 'uuid';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();
