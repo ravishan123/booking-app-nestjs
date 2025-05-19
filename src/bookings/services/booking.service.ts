@@ -1,27 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Booking } from '../entities/booking.entity';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CreateBookingDto } from '../dto/create-booking.dto';
+import { Booking, BookingStatus } from '@prisma/client';
 
 @Injectable()
 export class BookingService {
-  constructor(
-    @InjectRepository(Booking)
-    private bookingRepository: Repository<Booking>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createBookingDto: CreateBookingDto): Promise<Booking> {
-    const booking = this.bookingRepository.create(createBookingDto);
-    return this.bookingRepository.save(booking);
+    return this.prisma.booking.create({
+      data: createBookingDto,
+    });
   }
 
   async findAll(): Promise<Booking[]> {
-    return this.bookingRepository.find();
+    return this.prisma.booking.findMany();
   }
 
   async findOne(id: string): Promise<Booking> {
-    const booking = await this.bookingRepository.findOne({ where: { id } });
+    const booking = await this.prisma.booking.findUnique({
+      where: { id },
+    });
     if (!booking) {
       throw new NotFoundException(`Booking with ID ${id} not found`);
     }
@@ -32,13 +31,23 @@ export class BookingService {
     id: string,
     updateBookingDto: Partial<CreateBookingDto>,
   ): Promise<Booking> {
-    const booking = await this.findOne(id);
-    Object.assign(booking, updateBookingDto);
-    return this.bookingRepository.save(booking);
+    try {
+      return await this.prisma.booking.update({
+        where: { id },
+        data: updateBookingDto,
+      });
+    } catch (error) {
+      throw new NotFoundException(`Booking with ID ${id} not found`);
+    }
   }
 
   async remove(id: string): Promise<void> {
-    const booking = await this.findOne(id);
-    await this.bookingRepository.remove(booking);
+    try {
+      await this.prisma.booking.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new NotFoundException(`Booking with ID ${id} not found`);
+    }
   }
 }
